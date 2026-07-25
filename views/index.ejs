@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LeadDesk Mini &mdash; every inquiry, logged the moment it lands</title>
+  <meta name="description" content="A small lead-capture tool. Submit an inquiry and it's on the desk instantly." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <div class="shell">
+    <header class="site-header">
+      <a href="/" class="wordmark"><span class="dot"></span>LeadDesk<span style="color: var(--ink-soft); font-weight: 500;">.mini</span></a>
+      <a href="/admin/login" class="eyebrow" style="text-decoration:none;">Admin &rarr;</a>
+    </header>
+
+    <section class="hero">
+      <div>
+        <span class="eyebrow">Intake, logged</span>
+        <h1>Every inquiry lands on the desk the moment it's sent.</h1>
+        <p class="lede">
+          No inbox to dig through, no spreadsheet to update by hand. A visitor
+          fills in one short form, and it's already sitting in your admin
+          queue, timestamped and ready to work.
+        </p>
+        <div class="hero-cta">
+          <span>Fill in the form below</span>
+          <kbd>&darr;</kbd>
+        </div>
+      </div>
+
+      <div class="ledger-mock" aria-hidden="true">
+        <div class="ledger-mock-head">
+          <span>Intake log</span>
+          <span class="live">live</span>
+        </div>
+        <div class="ledger-row">
+          <span class="who">R. Fernandes</span>
+          <span class="budget">$5k&ndash;$20k</span>
+          <span class="badge badge-New">New</span>
+        </div>
+        <div class="ledger-row">
+          <span class="who">Aanya K.</span>
+          <span class="budget">$1k&ndash;$5k</span>
+          <span class="badge badge-Contacted">Contacted</span>
+        </div>
+        <div class="ledger-row">
+          <span class="who">M. Okafor</span>
+          <span class="budget">$20k+</span>
+          <span class="badge badge-New">New</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="entry-card card" id="entry">
+      <div class="entry-card-head">
+        <h2>New entry</h2>
+        <span class="eyebrow">Takes about a minute</span>
+      </div>
+      <div class="entry-card-body">
+
+        <% if (submitted) { %>
+          <div class="success-banner">
+            Logged. Thanks &mdash; someone will get back to you shortly.
+          </div>
+        <% } %>
+
+        <form action="/leads" method="POST" novalidate>
+          <div class="field <%= errors.name ? 'has-error' : '' %>">
+            <label for="name">Name</label>
+            <input type="text" id="name" name="name" value="<%= values.name %>" required maxlength="100" autocomplete="name" />
+            <% if (errors.name) { %><div class="field-error"><%= errors.name %></div><% } %>
+          </div>
+
+          <div class="field <%= errors.email ? 'has-error' : '' %>">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" value="<%= values.email %>" required autocomplete="email" />
+            <% if (errors.email) { %><div class="field-error"><%= errors.email %></div><% } %>
+          </div>
+
+          <div class="field <%= errors.budgetRange ? 'has-error' : '' %>">
+            <label for="budgetRange">Budget range</label>
+            <select id="budgetRange" name="budgetRange" required>
+              <option value="" disabled <%= !values.budgetRange ? 'selected' : '' %>>Choose a range&hellip;</option>
+              <% ['Under $1k', '$1k - $5k', '$5k - $20k', '$20k+'].forEach(function(range) { %>
+                <option value="<%= range %>" <%= values.budgetRange === range ? 'selected' : '' %>><%= range %></option>
+              <% }) %>
+            </select>
+            <% if (errors.budgetRange) { %><div class="field-error"><%= errors.budgetRange %></div><% } %>
+          </div>
+
+          <div class="field <%= errors.message ? 'has-error' : '' %>">
+            <label for="message">Message</label>
+            <textarea id="message" name="message" required maxlength="2000"><%= values.message %></textarea>
+            <% if (errors.message) { %><div class="field-error"><%= errors.message %></div><% } %>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-block">Log inquiry</button>
+        </form>
+      </div>
+    </section>
+
+    <%- include('partials/footer') %>
+  </div>
+
+  <script src="/js/validate.js"></script>
+</body>
+</html>

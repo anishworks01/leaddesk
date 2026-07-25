@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin &mdash; LeadDesk Mini</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <div class="shell">
+    <header class="admin-header">
+      <a href="/" class="wordmark"><span class="dot"></span>LeadDesk<span style="color: var(--ink-soft); font-weight: 500;">.mini</span></a>
+      <div class="who">
+        Signed in as <%= adminEmail %>
+        &middot;
+        <form class="logout-form" action="/admin/logout" method="POST">
+          <button type="submit" class="link-btn">Sign out</button>
+        </form>
+      </div>
+    </header>
+
+    <form class="search-bar" action="/admin" method="GET">
+      <input type="search" name="q" value="<%= q %>" placeholder="Search by name or email&hellip;" />
+      <button type="submit" class="btn btn-primary">Search</button>
+      <% if (q) { %><a href="/admin" class="btn" style="background:var(--card); border:1px solid var(--line); color:var(--ink-soft);">Clear</a><% } %>
+    </form>
+
+    <div class="ledger-table-wrap">
+      <% if (leads.length === 0) { %>
+        <div class="empty-state">
+          <h3><%= q ? 'No matches' : 'Nothing logged yet' %></h3>
+          <p><%= q ? `No leads match "${q}". Try a different search.` : 'Submissions from the public form will show up here.' %></p>
+        </div>
+      <% } else { %>
+        <table class="ledger-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Budget</th>
+              <th>Message</th>
+              <th>Received</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% leads.forEach(function(lead) { %>
+              <tr data-lead-id="<%= lead._id %>">
+                <td class="cell-name"><%= lead.name %></td>
+                <td class="cell-mono"><%= lead.email %></td>
+                <td class="cell-mono"><%= lead.budgetRange %></td>
+                <td class="cell-message"><%= lead.message %></td>
+                <td class="cell-mono"><%= new Date(lead.createdAt).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' }) %></td>
+                <td>
+                  <div class="status-actions">
+                    <span class="badge badge-<%= lead.status %>" data-status-badge><%= lead.status %></span>
+                    <select class="status-select" data-status-select aria-label="Change status for <%= lead.name %>">
+                      <% statuses.forEach(function(status) { %>
+                        <option value="<%= status %>" <%= lead.status === status ? 'selected' : '' %>><%= status %></option>
+                      <% }) %>
+                    </select>
+                  </div>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      <% } %>
+    </div>
+
+    <%- include('../partials/footer') %>
+  </div>
+
+  <script src="/js/admin.js"></script>
+</body>
+</html>
