@@ -27,6 +27,10 @@ async function start() {
   app.set('view engine', 'ejs');
   app.set('views', path.join(__dirname, 'views'));
 
+  if (isProduction) {
+    app.set('trust proxy', 1);
+  }
+
   // --- Core middleware -------------------------------------------------------
   app.use(morgan(isProduction ? 'combined' : 'dev'));
   app.use(express.urlencoded({ extended: true })); // parses <form> POSTs
